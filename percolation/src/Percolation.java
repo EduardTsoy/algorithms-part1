@@ -3,8 +3,10 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
 
     private final int n;
-    private final int theLast;
-    private final WeightedQuickUnionUF uf;
+    private final int virtualTop;
+    private final int virtualBottom;
+    private final WeightedQuickUnionUF fill;
+    private final WeightedQuickUnionUF percol;
     private final boolean[] isOpen;
     private int numberOfOpenSites;
 
@@ -14,11 +16,14 @@ public class Percolation {
             throw new IllegalArgumentException("N must be greater than 0.");
         }
         this.n = n;
-        uf = new WeightedQuickUnionUF(n * n + 2);
-        theLast = n * n + 1;
+        fill = new WeightedQuickUnionUF(n * n + 1);
+        percol = new WeightedQuickUnionUF(n * n + 2);
+        virtualTop = 0;
+        virtualBottom = n * n + 1;
         for (int i = 1; i <= n; i++) {
-            uf.union(i, 0);
-            uf.union(theLast - i, theLast);
+            fill.union(i, virtualTop);
+            percol.union(i, virtualTop);
+            percol.union(virtualBottom - i, virtualBottom);
         }
         isOpen = new boolean[n * n + 1];
         numberOfOpenSites = 0;
@@ -32,16 +37,20 @@ public class Percolation {
             numberOfOpenSites++;
             isOpen[index] = true;
             if (row > 1 && isOpen[index - n]) {
-                uf.union(index, index - n);
+                fill.union(index, index - n);
+                percol.union(index, index - n);
             }
             if (row < n && isOpen[index + n]) {
-                uf.union(index, index + n);
+                fill.union(index, index + n);
+                percol.union(index, index + n);
             }
             if (col > 1 && isOpen[index - 1]) {
-                uf.union(index, index - 1);
+                fill.union(index, index - 1);
+                percol.union(index, index - 1);
             }
             if (col < n && isOpen[index + 1]) {
-                uf.union(index, index + 1);
+                fill.union(index, index + 1);
+                percol.union(index, index + 1);
             }
         }
     }
@@ -57,7 +66,7 @@ public class Percolation {
     public boolean isFull(int row,
                           int col) {
         int index = getIndex(row, col);
-        return isOpen[index] && uf.connected(index, 0);
+        return isOpen[index] && fill.connected(index, virtualTop);
     }
 
     // number of open sites
@@ -67,7 +76,7 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        return uf.connected(0, theLast);
+        return percol.connected(virtualTop, virtualBottom);
     }
 
     // test client (optional)
