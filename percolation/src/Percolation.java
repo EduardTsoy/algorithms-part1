@@ -76,12 +76,13 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        boolean result = perc.connected(virtualTop, virtualBottom);
+        boolean result = perc.connected(virtualTop, virtualBottom) && numberOfOpenSites > 0;
         return result;
     }
 
     // test client (optional)
     public static void main(String[] args) {
+        // do nothing
     }
 
     /*
