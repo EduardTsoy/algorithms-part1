@@ -6,7 +6,7 @@ public class Percolation {
     private final int virtualTop;
     private final int virtualBottom;
     private final WeightedQuickUnionUF fill;
-    private final WeightedQuickUnionUF percol;
+    private final WeightedQuickUnionUF perc;
     private final boolean[] isOpen;
     private int numberOfOpenSites;
 
@@ -17,13 +17,13 @@ public class Percolation {
         }
         this.n = n;
         fill = new WeightedQuickUnionUF(n * n + 1);
-        percol = new WeightedQuickUnionUF(n * n + 2);
+        perc = new WeightedQuickUnionUF(n * n + 2);
         virtualTop = 0;
         virtualBottom = n * n + 1;
         for (int i = 1; i <= n; i++) {
             fill.union(i, virtualTop);
-            percol.union(i, virtualTop);
-            percol.union(virtualBottom - i, virtualBottom);
+            perc.union(i, virtualTop);
+            perc.union(virtualBottom - i, virtualBottom);
         }
         isOpen = new boolean[n * n + 1];
         numberOfOpenSites = 0;
@@ -38,19 +38,19 @@ public class Percolation {
             isOpen[index] = true;
             if (row > 1 && isOpen[index - n]) {
                 fill.union(index, index - n);
-                percol.union(index, index - n);
+                perc.union(index, index - n);
             }
             if (row < n && isOpen[index + n]) {
                 fill.union(index, index + n);
-                percol.union(index, index + n);
+                perc.union(index, index + n);
             }
             if (col > 1 && isOpen[index - 1]) {
                 fill.union(index, index - 1);
-                percol.union(index, index - 1);
+                perc.union(index, index - 1);
             }
             if (col < n && isOpen[index + 1]) {
                 fill.union(index, index + 1);
-                percol.union(index, index + 1);
+                perc.union(index, index + 1);
             }
         }
     }
@@ -76,7 +76,8 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        return percol.connected(virtualTop, virtualBottom);
+        boolean result = perc.connected(virtualTop, virtualBottom);
+        return result;
     }
 
     // test client (optional)
