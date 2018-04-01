@@ -1,14 +1,16 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
+    private static final int VIRTUAL_TOP = 0;
 
     private final int n;
-    private final int virtualTop;
-    private final int virtualBottom;
     private final WeightedQuickUnionUF fill;
-    private final WeightedQuickUnionUF perc;
     private final boolean[] isOpen;
     private int numberOfOpenSites;
+
+    // Index of this array is a component index, not a site index.
+    // Will fail if WeightedQuickUnionUF implementation uses component indexes not within site index range.
+    private final boolean[] componentConnectedToBottom;
 
     // create n-by-n grid, with all sites blocked
     public Percolation(int n) {
@@ -17,16 +19,13 @@ public class Percolation {
         }
         this.n = n;
         fill = new WeightedQuickUnionUF(n * n + 1);
-        perc = new WeightedQuickUnionUF(n * n + 2);
-        virtualTop = 0;
-        virtualBottom = n * n + 1;
-        for (int i = 1; i <= n; i++) {
-            fill.union(i, virtualTop);
-            perc.union(i, virtualTop);
-            perc.union(virtualBottom - i, virtualBottom);
-        }
         isOpen = new boolean[n * n + 1];
         numberOfOpenSites = 0;
+        componentConnectedToBottom = new boolean[n * n + 1];
+        for (int i = 1; i <= n; i++) {
+            fill.union(i, VIRTUAL_TOP);
+            componentConnectedToBottom[getIndex(n, i)] = true;
+        }
     }
 
     // open site (row, col) if it is not open already
@@ -37,20 +36,16 @@ public class Percolation {
             numberOfOpenSites++;
             isOpen[index] = true;
             if (row > 1 && isOpen[index - n]) {
-                fill.union(index, index - n);
-                perc.union(index, index - n);
+                makeUnionAndMarkConnectedToBottom(index, index - n);
             }
             if (row < n && isOpen[index + n]) {
-                fill.union(index, index + n);
-                perc.union(index, index + n);
+                makeUnionAndMarkConnectedToBottom(index, index + n);
             }
             if (col > 1 && isOpen[index - 1]) {
-                fill.union(index, index - 1);
-                perc.union(index, index - 1);
+                makeUnionAndMarkConnectedToBottom(index, index - 1);
             }
             if (col < n && isOpen[index + 1]) {
-                fill.union(index, index + 1);
-                perc.union(index, index + 1);
+                makeUnionAndMarkConnectedToBottom(index, index + 1);
             }
         }
     }
@@ -58,15 +53,14 @@ public class Percolation {
     // is site (row, col) open?
     public boolean isOpen(int row,
                           int col) {
-        int index = getIndex(row, col);
-        return isOpen[index];
+        return isOpen[getIndex(row, col)];
     }
 
     // is site (row, col) full?
     public boolean isFull(int row,
                           int col) {
         int index = getIndex(row, col);
-        return isOpen[index] && fill.connected(index, virtualTop);
+        return isOpen[index] && fill.connected(index, VIRTUAL_TOP);
     }
 
     // number of open sites
@@ -76,8 +70,7 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        boolean result = perc.connected(virtualTop, virtualBottom) && numberOfOpenSites > 0;
-        return result;
+        return numberOfOpenSites > 0 && componentConnectedToBottom[fill.find(VIRTUAL_TOP)];
     }
 
     // test client (optional)
@@ -88,6 +81,17 @@ public class Percolation {
     /*
      * PRIVATE METHODS
      */
+
+    private void makeUnionAndMarkConnectedToBottom(int site,
+                                                   int neighbor) {
+        int siteComponent = fill.find(site);
+        int neighborComponent = fill.find(neighbor);
+        boolean bottomConnected = componentConnectedToBottom[siteComponent] || componentConnectedToBottom[neighborComponent];
+        componentConnectedToBottom[siteComponent] = bottomConnected;
+        componentConnectedToBottom[neighborComponent] = bottomConnected;
+
+        fill.union(site, neighbor);
+    }
 
     private void valicateCoordinates(int row,
                                      int col) {

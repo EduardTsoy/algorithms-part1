@@ -3,7 +3,7 @@ import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
 
-    private static final double CONFIDENCE_95 = 1.96;
+    private static final double CONFIDENCE_95 = 1.96d;
     private final double mean;
     private final double stddev;
     private final double lo;
@@ -19,23 +19,24 @@ public class PercolationStats {
             throw new IllegalArgumentException("T must be greater than 0.");
         }
         double[] threshold = new double[trials];
+        int row, col;
+        Percolation perc;
         for (int i = 0; i < trials; i++) {
-            Percolation perc = new Percolation(n);
-            while (!perc.percolates()) {
-                int row;
-                int col;
+            perc = new Percolation(n);
+            do {
                 do {
                     row = StdRandom.uniform(1, n + 1);
                     col = StdRandom.uniform(1, n + 1);
                 } while (perc.isOpen(row, col));
                 perc.open(row, col);
-            }
+            } while (!perc.percolates());
             threshold[i] = (double) perc.numberOfOpenSites() / (n * n);
         }
         mean = StdStats.mean(threshold);
         stddev = StdStats.stddev(threshold);
-        lo = mean - CONFIDENCE_95 * stddev / Math.sqrt(trials);
-        hi = mean + CONFIDENCE_95 * stddev / Math.sqrt(trials);
+        double halfDeltaConfidence95 = CONFIDENCE_95 * stddev / Math.sqrt(trials);
+        lo = mean - halfDeltaConfidence95;
+        hi = mean + halfDeltaConfidence95;
     }
 
     // sample mean of percolation threshold
