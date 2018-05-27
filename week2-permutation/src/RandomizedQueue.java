@@ -49,6 +49,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (first == null) {
             last = null;
         }
+        n--;
         return result;
     }
 
@@ -59,7 +60,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
         int rnd = StdRandom.uniform(n);
         QueueNode<Item> result = first;
-        for (int i = 0; i < rnd; i++) {
+        for (int i = 1; i < rnd; i++) {
             result = result.next;
         }
         return result.value;
@@ -111,7 +112,13 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     // unit testing (optional)
     public static void main(String[] args) {
-        // not used
+        RandomizedQueue<Integer> rq = new RandomizedQueue<>();
+        System.out.println(rq.size()); //        ==> 0
+        rq.enqueue(537);
+        rq.enqueue(714);
+        rq.dequeue(); //     ==> 537
+        rq.dequeue(); //     ==> 714
+        System.out.println(rq.size()); //        ==> actual 2, expected 0
     }
 
     private static class QueueNode<Item> {
