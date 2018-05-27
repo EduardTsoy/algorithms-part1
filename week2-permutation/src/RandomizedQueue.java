@@ -81,7 +81,6 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         private int theNext = 0;
 
         MyIterator() {
-            @SuppressWarnings("unchecked")
             Item[] arr = (Item[]) new Object[n];
             QueueNode<Item> current = first;
             for (int i = 0; i < arr.length; i++) {

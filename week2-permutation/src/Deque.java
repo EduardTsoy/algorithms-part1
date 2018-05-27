@@ -33,8 +33,6 @@ public class Deque<Item> implements Iterable<Item> {
             first.prev = newNode;
         }
         first = newNode;
-        if (last == null) {
-        }
         n++;
     }
 
