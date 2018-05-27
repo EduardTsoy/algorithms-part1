@@ -96,10 +96,11 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             if (current >= indexes.length) {
                 throw new NoSuchElementException();
             }
-            if (indexes.length != items.length) {
+            int index = indexes[current++];
+            if (index >= items.length) {
                 throw new ConcurrentModificationException();
             }
-            return items[indexes[current++]];
+            return items[index];
         }
 
         @Override
