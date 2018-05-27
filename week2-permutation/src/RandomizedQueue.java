@@ -72,21 +72,22 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private class MyIterator implements Iterator<Item> {
 
-        private Item[] items;
+        private final Item[] items;
         private int theNext = 0;
 
         MyIterator() {
-            items = (Item[]) new Object[n];
+            Item[] arr = (Item[]) new Object[n];
             QueueNode<Item> current = first;
-            for (int i = 0; i < items.length; i++) {
+            for (int i = 0; i < arr.length; i++) {
                 if (current == null) {
-                    items = Arrays.copyOf(items, i);
+                    arr = Arrays.copyOf(arr, i);
                     break;
                 }
-                items[i] = current.value;
+                arr[i] = current.value;
                 current = current.next;
             }
-            StdRandom.shuffle(items);
+            StdRandom.shuffle(arr);
+            items = arr;
         }
 
         @Override
@@ -110,16 +111,28 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     // unit testing (optional)
     public static void main(String[] args) {
-
+        // not used
     }
 
     private static class QueueNode<Item> {
 
-        Item value;
-        QueueNode<Item> next;
+        private final Item value;
+        private QueueNode<Item> next;
 
         QueueNode(Item value) {
             this.value = value;
+        }
+
+        public Item getValue() {
+            return value;
+        }
+
+        public QueueNode<Item> getNext() {
+            return next;
+        }
+
+        public void setNext(QueueNode<Item> next) {
+            this.next = next;
         }
     }
 }

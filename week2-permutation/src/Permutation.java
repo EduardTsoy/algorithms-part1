@@ -12,7 +12,7 @@ public class Permutation {
             StdOut.println("where <k> is the number of elements to print");
             return;
         }
-        Integer k = Integer.valueOf(args[0]);
+        int k = Integer.parseInt(args[0]);
         RandomizedQueue<String> q = new RandomizedQueue<>();
         while (!StdIn.isEmpty()) {
             String s = StdIn.readString();
