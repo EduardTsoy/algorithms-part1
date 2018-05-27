@@ -47,13 +47,14 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             throw new NoSuchElementException();
         }
         Item result = items[--n];
+        items[n] = null;
         shrinkIfNecessary();
         return result;
     }
 
     private void shrinkIfNecessary() {
         if (n < items.length / 2) {
-            Item[] arr = (Item[]) new Object[n / 2];
+            Item[] arr = (Item[]) new Object[items.length / 2];
             System.arraycopy(items, 0, arr, 0, n);
             items = arr;
         }
@@ -116,5 +117,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         System.out.println(rq.dequeue()); //     ==> 537
         System.out.println(rq.dequeue()); //     ==> 714
         System.out.println(rq.size()); //        ==> expected 0
+        for (int i = 0; i < 1000; i++) {
+            rq.enqueue(i);
+        }
+        System.out.println(rq.size());
     }
 }
