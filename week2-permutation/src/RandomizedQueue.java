@@ -1,6 +1,7 @@
 import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -60,8 +61,11 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
         int rnd = StdRandom.uniform(n);
         QueueNode<Item> result = first;
-        for (int i = 1; i < rnd; i++) {
+        for (int i = 0; i < rnd; i++) {
             result = result.next;
+            if (result == null) {
+                throw new ConcurrentModificationException();
+            }
         }
         return result.value;
     }
@@ -77,6 +81,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         private int theNext = 0;
 
         MyIterator() {
+            @SuppressWarnings("unchecked")
             Item[] arr = (Item[]) new Object[n];
             QueueNode<Item> current = first;
             for (int i = 0; i < arr.length; i++) {
