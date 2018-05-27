@@ -46,7 +46,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (n == 0) {
             throw new NoSuchElementException();
         }
-        Item result = items[--n];
+        int randomIndex = StdRandom.uniform(n);
+        Item result = items[randomIndex];
+        items[randomIndex] = items[--n];
         items[n] = null;
         shrinkIfNecessary();
         return result;
@@ -115,12 +117,15 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         System.out.println(rq.size()); //        ==> 0
         rq.enqueue(537);
         rq.enqueue(714);
-        System.out.println(rq.dequeue()); //     ==> 537
-        System.out.println(rq.dequeue()); //     ==> 714
+        System.out.println(rq.dequeue());
+        System.out.println(rq.dequeue());
         System.out.println(rq.size()); //        ==> expected 0
         for (int i = 0; i < 1000; i++) {
             rq.enqueue(i);
         }
-        System.out.println(rq.size());
+        System.out.println(rq.size()); //        ==> expected 1000
+        System.out.println(rq.dequeue());
+        System.out.println(rq.dequeue());
+        System.out.println(rq.size()); //        ==> expected 998
     }
 }

@@ -1,5 +1,6 @@
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Iterator;
 
@@ -14,9 +15,16 @@ public class Permutation {
         }
         int k = Integer.parseInt(args[0]);
         RandomizedQueue<String> q = new RandomizedQueue<>();
+        int count = 0;
         while (!StdIn.isEmpty()) {
             String s = StdIn.readString();
-            q.enqueue(s);
+            count++;
+            if (q.size() < k) {
+                q.enqueue(s);
+            } else if (q.size() == k && StdRandom.uniform(count) < k) {
+                q.dequeue();
+                q.enqueue(s);
+            }
         }
         Iterator<String> iterator = q.iterator();
         for (int i = 0; i < k; i++) {
